@@ -16,6 +16,10 @@ $(function () {
     chrome.storage.sync.get('wicon', function (iconurl) {
         $('#wicon').attr('src',iconurl.wicon);
     });
+    
+    chrome.storage.sync.get('lastRefresh', function (lastTime) {
+        $('#lastRefresh').text(lastTime.lastRefresh);
+    });
 
     
     $('#setLoc').click(function () {
@@ -54,6 +58,13 @@ $(function () {
                     var iconurl = `http://openweathermap.org/img/w/${iconcode}.png`;
                     $('#wicon').attr('src', iconurl);
                     chrome.storage.sync.set({ 'wicon': iconurl });
+                
+                    var dateTime = new Date();
+                    var mins = dateTime.getMinutes();
+                    var hrs = dateTime.getHours();
+                    var lastRefreshTime = `${hrs}:${mins}`;
+                    $('#lastRefresh').text(lastRefreshTime);
+                    chrome.storage.sync.set({'lastRefresh': lastRefreshTime });
                 });
 
             
@@ -82,13 +93,20 @@ $(function () {
                     
                     var KtoC = temp - 273.15;
                     KtoC = KtoC.toFixed(0);
+                
+                    var dateTime = new Date();
+                    var mins = dateTime.getMinutes();
+                    var hrs = dateTime.getHours();
+                    var lastRefreshTime = `${hrs}:${mins}`;
 
                     $('#curTemp').text( KtoF );
                     $('#curTempC').text( KtoC );
                     $('#wicon').attr('src', iconurl);
+                    $('#lastRefresh').text(lastRefreshTime);
                     chrome.storage.sync.set({ 'currentTemp': KtoF });
                     chrome.storage.sync.set({ 'currentTempC': KtoC });
                     chrome.storage.sync.set({ 'wicon': iconurl });
+                    chrome.storage.sync.set({'lastRefresh': lastRefreshTime });
                 });
 
         });
