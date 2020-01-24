@@ -1,4 +1,4 @@
-var newLocation = "Perth";
+var newLocation = "";
 $(function () {
 
     chrome.storage.sync.get('Loc', function (location) {
@@ -16,11 +16,10 @@ $(function () {
     chrome.storage.sync.get('wicon', function (iconurl) {
         $('#wicon').attr('src',iconurl.wicon);
     });
-    
+
     chrome.storage.sync.get('lastRefresh', function (lastTime) {
         $('#lastRefresh').text(lastTime.lastRefresh);
     });
-
     
     $('#setLoc').click(function () {
         chrome.storage.sync.get('Loc', function (location) {
@@ -34,7 +33,7 @@ $(function () {
 
             $('#greet').text(newLocation);
             $('#name').val('');
-            const url = `http://api.openweathermap.org/data/2.5/weather?q=${newLocation}&APPID=<your API key goes here>`;
+            const url = `http://api.openweathermap.org/data/2.5/weather?q=${newLocation}&APPID=<YOUR API KEY GOES HERE>`;
 
             
             fetch(url)
@@ -58,11 +57,23 @@ $(function () {
                     var iconurl = `http://openweathermap.org/img/w/${iconcode}.png`;
                     $('#wicon').attr('src', iconurl);
                     chrome.storage.sync.set({ 'wicon': iconurl });
-                
+
                     var dateTime = new Date();
+                    var month = dateTime.getMonth() + 1;
+                    var days = dateTime.getDate();
                     var mins = dateTime.getMinutes();
+                    var minsZero = "0";
                     var hrs = dateTime.getHours();
-                    var lastRefreshTime = `${hrs}:${mins}`;
+                    if(mins < 10) {
+                        minsZero += mins;
+                    }
+                    else {
+                        minsZero = mins;
+                    }
+                    if(hrs != 12) {
+                        hrs = hrs%12;
+                    }
+                    var lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
                     $('#lastRefresh').text(lastRefreshTime);
                     chrome.storage.sync.set({'lastRefresh': lastRefreshTime });
                 });
@@ -76,7 +87,7 @@ $(function () {
             location.Loc = $('#greet').text();
         
 
-            const url = `http://api.openweathermap.org/data/2.5/weather?q=${location.Loc}&APPID=<your API key goes here>`;
+            const url = `http://api.openweathermap.org/data/2.5/weather?q=${location.Loc}&APPID=<YOUR API KEY GOES HERE>`;
 
             
             fetch(url)
@@ -93,11 +104,23 @@ $(function () {
                     
                     var KtoC = temp - 273.15;
                     KtoC = KtoC.toFixed(0);
-                
+
                     var dateTime = new Date();
+                    var month = dateTime.getMonth() + 1;
+                    var days = dateTime.getDate();
                     var mins = dateTime.getMinutes();
+                    var minsZero = "0";
+                    if(mins < 10) {
+                        minsZero += mins;
+                    }
+                    else {
+                        minsZero = mins;
+                    }
                     var hrs = dateTime.getHours();
-                    var lastRefreshTime = `${hrs}:${mins}`;
+                    if(hrs != 12) {
+                        hrs = hrs%12;
+                    }
+                    var lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
 
                     $('#curTemp').text( KtoF );
                     $('#curTempC').text( KtoC );
