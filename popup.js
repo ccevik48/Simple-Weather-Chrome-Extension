@@ -1,39 +1,44 @@
-var newLocation = "";
-$(function () {
+let newLocation = "";
+document.addEventListener("DOMContentLoaded", () => {
 
     chrome.storage.sync.get('Loc', function (location) {
-        $('#greet').text(location.Loc);
+        document.getElementById("greet").innerText = location.Loc;
     });
 
     chrome.storage.sync.get('currentTemp', function (temperature) {
-        $('#curTemp').text(temperature.currentTemp);
+        document.getElementById("curTemp").innerText = temperature.currentTemp;
     });
 
     chrome.storage.sync.get('currentTempC', function (temperature) {
-        $('#curTempC').text(temperature.currentTempC);
+        document.getElementById("curTempC").innerText = temperature.currentTempC;
     });
 
     chrome.storage.sync.get('wicon', function (iconurl) {
-        $('#wicon').attr('src',iconurl.wicon);
+        console.log("url: ", iconurl)
+        document.getElementById("wicon").setAttribute('src', iconurl.wicon);
     });
 
     chrome.storage.sync.get('lastRefresh', function (lastTime) {
-        $('#lastRefresh').text(lastTime.lastRefresh);
+        document.getElementById("lastRefresh").innerText = lastTime.lastRefresh;
     });
     
-    $('#setLoc').click(function () {
+    var btn = document.getElementById("setLoc")
+    // document.getElementById("setLoc").click(function () {
+    btn.addEventListener('click',function() {
         chrome.storage.sync.get('Loc', function (location) {
             
-            location.Loc = $('#name').val();
+            location.Loc = document.getElementById("name").value;
             if (location.Loc) {
                 newLocation = location.Loc;
             }
 
             chrome.storage.sync.set({ 'Loc': newLocation });
 
-            $('#greet').text(newLocation);
-            $('#name').val('');
-            const url = `http://api.openweathermap.org/data/2.5/weather?q=${newLocation}&APPID=<YOUR API KEY GOES HERE>`;
+            document.getElementById("greet").innerText = newLocation;
+            document.getElementById("name").value = '';
+            const url = `http://api.openweathermap.org/data/2.5/weather?q=${newLocation}&APPID=<API KEY GOES HERE>`
+
+            console.log("042: ", url)
 
             
             fetch(url)
@@ -42,28 +47,30 @@ $(function () {
                 })
                 .then(data => {
                     const {temp} = data.main;
-                    //const {ico} = data.weather[0].icon;
-                    var KtoF = (temp*9.0/5) - 459.67;
+                    console.log(data)
+                    let KtoF = (temp*9.0/5) - 459.67;
                     KtoF = KtoF.toFixed(0);
-                    $('#curTemp').text( KtoF );
+                    document.getElementById("curTemp").innerText =  KtoF ;
                     chrome.storage.sync.set({ 'currentTemp': KtoF });
 
-                    var KtoC = temp - 273.15;
+                    let KtoC = temp - 273.15;
                     KtoC = KtoC.toFixed(0);
-                    $('#curTempC').text( KtoC );
+                    document.getElementById("curTempC").innerText =  KtoC ;
                     chrome.storage.sync.set({ 'currentTempC': KtoC });
 
-                    var iconcode = data.weather[0].icon;
-                    var iconurl = `http://openweathermap.org/img/w/${iconcode}.png`;
-                    $('#wicon').attr('src', iconurl);
+                    let iconcode = data.weather[0].icon;
+                    let iconurl = `http://openweathermap.org/img/w/${iconcode}.png`
+                    console.log(iconurl)
+                    document.getElementById("wicon").setAttribute('src', iconurl)
+                    
                     chrome.storage.sync.set({ 'wicon': iconurl });
 
-                    var dateTime = new Date();
-                    var month = dateTime.getMonth() + 1;
-                    var days = dateTime.getDate();
-                    var mins = dateTime.getMinutes();
-                    var minsZero = "0";
-                    var hrs = dateTime.getHours();
+                    let dateTime = new Date();
+                    let month = dateTime.getMonth() + 1;
+                    let days = dateTime.getDate();
+                    let mins = dateTime.getMinutes();
+                    let minsZero = "0";
+                    let hrs = dateTime.getHours();
                     if(mins < 10) {
                         minsZero += mins;
                     }
@@ -73,8 +80,8 @@ $(function () {
                     if(hrs != 12) {
                         hrs = hrs%12;
                     }
-                    var lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
-                    $('#lastRefresh').text(lastRefreshTime);
+                    let lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
+                    document.getElementById("lastRefresh").innerText = lastRefreshTime;
                     chrome.storage.sync.set({'lastRefresh': lastRefreshTime });
                 });
 
@@ -82,50 +89,59 @@ $(function () {
         });
     });
 
-    $('#refresh').click(function () {
+    var rfrsh = document.getElementById("refresh")
+    rfrsh.addEventListener('click',function() {
+        console.log("refreshing... ")
         chrome.storage.sync.get('Loc', function (location) {
-            location.Loc = $('#greet').text();
+            location.Loc = document.getElementById("greet").innerText;
+            newLocation = location.Loc
+            console.log(location.Loc," amd ", newLocation)
         
 
-            const url = `http://api.openweathermap.org/data/2.5/weather?q=${location.Loc}&APPID=<YOUR API KEY GOES HERE>`;
+            const url = `http://api.openweathermap.org/data/2.5/weather?q=${newLocation}&APPID=<API KEY GOES HERE>`
 
+            console.log("102: ", url)
             
             fetch(url)
                 .then(response => {
                     return response.json();
                 })
                 .then(data => {
+                    console.log(data)
                     const {temp} = data.main;
-                    var KtoF = (temp*9.0/5) - 459.67;
+                    let KtoF = (temp*9.0/5) - 459.67;
                     KtoF = KtoF.toFixed(0);
 
-                    var iconcode = data.weather[0].icon;
-                    var iconurl = `http://openweathermap.org/img/w/${iconcode}.png`;
+                    let iconcode = data.weather[0].icon;
+                    console.log("iconcode: "+iconcode)
+                    let iconurl = `http://openweathermap.org/img/w/${iconcode}.png`
                     
-                    var KtoC = temp - 273.15;
+                    let KtoC = temp - 273.15;
                     KtoC = KtoC.toFixed(0);
 
-                    var dateTime = new Date();
-                    var month = dateTime.getMonth() + 1;
-                    var days = dateTime.getDate();
-                    var mins = dateTime.getMinutes();
-                    var minsZero = "0";
+                    let dateTime = new Date();
+                    let month = dateTime.getMonth() + 1;
+                    let days = dateTime.getDate();
+                    let mins = dateTime.getMinutes();
+                    let minsZero = "0";
                     if(mins < 10) {
                         minsZero += mins;
                     }
                     else {
                         minsZero = mins;
                     }
-                    var hrs = dateTime.getHours();
+                    let hrs = dateTime.getHours();
                     if(hrs != 12) {
                         hrs = hrs%12;
                     }
-                    var lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
+                    let lastRefreshTime = `${month}/${days}  ${hrs}:${minsZero}`;
 
-                    $('#curTemp').text( KtoF );
-                    $('#curTempC').text( KtoC );
-                    $('#wicon').attr('src', iconurl);
-                    $('#lastRefresh').text(lastRefreshTime);
+                    document.getElementById("curTemp").innerText =  KtoF ;
+                    document.getElementById("curTempC").innerText =  KtoC ;
+                    // document.getElementById("wicon").attr('src', iconurl);
+                    document.getElementById("wicon").setAttribute('src', iconurl);
+                    // pic3 = iconurl
+                    document.getElementById("lastRefresh").innerText = lastRefreshTime;
                     chrome.storage.sync.set({ 'currentTemp': KtoF });
                     chrome.storage.sync.set({ 'currentTempC': KtoC });
                     chrome.storage.sync.set({ 'wicon': iconurl });

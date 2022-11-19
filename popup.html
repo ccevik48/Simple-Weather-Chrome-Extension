@@ -2,16 +2,18 @@
 <html>
     <head>
         <title>Weather</title>
-        <script type="text/javascript" src="jquery-3.4.1.js"></script>
-        <script type="text/javascript" src="popup.js"></script>
+        
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body class="body1">
         <span id="main123">
             <span id="greet"></span>  <div id="icon123"><img id="wicon" src="" alt="Weather icon"></div>
         </span>
-        <h1 id="curTempMain">Last refreshed <span id="curTemp">1</span>&#176F / <span id="curTempC">1</span>&#176C</h1>
+        <h1 id="curTempMain"><span id="curTemp">1</span>&#176F / <span id="curTempC">1</span>&#176C</h1>
 
+        <span id="lastRefresh-main">
+            Last refreshed <p id="lastRefresh"></p>
+        </span>
         
         <!--
         <table id="forecast-table">
@@ -37,6 +39,6 @@
             <input type="button" id="setLoc" value="Set Location">
             <input type="button" id="refresh" value="&#x21bb">
         </form>
-        
+        <script type="text/javascript" src="popup.js"></script>
     </body>
 </html>
